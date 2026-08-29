@@ -6,7 +6,7 @@ import type { LinkItem } from "@/lib/mock-data";
 interface DeleteLinkModalProps {
   link: LinkItem;
   onClose: () => void;
-  onConfirm: (linkId: string) => void;
+  onConfirm: (linkId: string) => Promise<void>;
 }
 
 export default function DeleteLinkModal({
@@ -41,8 +41,8 @@ export default function DeleteLinkModal({
           </button>
           <button
             type="button"
-            onClick={() => {
-              onConfirm(link.id);
+            onClick={async () => {
+              await onConfirm(link.id);
               onClose();
             }}
             className="rounded-md bg-[var(--error)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
