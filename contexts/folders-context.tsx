@@ -13,6 +13,7 @@ import type { Folder } from "@/lib/mock-data";
 
 interface FoldersContextValue {
   folders: Folder[];
+  isLoadingFolders: boolean;
   isAddingFolder: boolean;
   addFolder: (name: string) => Promise<void>;
   deleteFolder: (folderId: string) => Promise<void>;
@@ -23,6 +24,7 @@ const FoldersContext = createContext<FoldersContextValue | null>(null);
 
 export function FoldersProvider({ children }: { children: ReactNode }) {
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [isLoadingFolders, setIsLoadingFolders] = useState(true);
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const isAddingRef = useRef(false);
 
@@ -33,8 +35,10 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
       .select("id, name")
       .order("created_at", { ascending: true })
       .then(({ data }) => {
-        if (!data) return;
-        setFolders(data.map((row) => ({ id: String(row.id), name: row.name })));
+        if (data) {
+          setFolders(data.map((row) => ({ id: String(row.id), name: row.name })));
+        }
+        setIsLoadingFolders(false);
       });
   }, []);
 
@@ -80,7 +84,14 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
 
   return (
     <FoldersContext.Provider
-      value={{ folders, isAddingFolder, addFolder, deleteFolder, renameFolder }}
+      value={{
+        folders,
+        isLoadingFolders,
+        isAddingFolder,
+        addFolder,
+        deleteFolder,
+        renameFolder,
+      }}
     >
       {children}
     </FoldersContext.Provider>
