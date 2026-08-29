@@ -4,18 +4,24 @@ import { useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 
 interface NewFolderModalProps {
+  isSubmitting: boolean;
   onClose: () => void;
-  onCreate: (name: string) => void;
+  onCreate: (name: string) => Promise<void>;
 }
 
-export default function NewFolderModal({ onClose, onCreate }: NewFolderModalProps) {
+export default function NewFolderModal({
+  isSubmitting,
+  onClose,
+  onCreate,
+}: NewFolderModalProps) {
   const [name, setName] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
     const trimmed = name.trim();
     if (trimmed.length === 0) return;
-    onCreate(trimmed);
+    await onCreate(trimmed);
     onClose();
   }
 
@@ -62,7 +68,7 @@ export default function NewFolderModal({ onClose, onCreate }: NewFolderModalProp
           </button>
           <button
             type="submit"
-            disabled={name.trim().length === 0}
+            disabled={name.trim().length === 0 || isSubmitting}
             className="button-primary-hover rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             저장

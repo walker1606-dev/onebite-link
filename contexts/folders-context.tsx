@@ -1,11 +1,20 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { folders as initialFolders, type Folder } from "@/lib/mock-data";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { createClient } from "@/utils/supabase/client";
+import type { Folder } from "@/lib/mock-data";
 
 interface FoldersContextValue {
   folders: Folder[];
-  addFolder: (name: string) => void;
+  isAddingFolder: boolean;
+  addFolder: (name: string) => Promise<void>;
   deleteFolder: (folderId: string) => void;
   renameFolder: (folderId: string, name: string) => void;
 }
@@ -13,14 +22,39 @@ interface FoldersContextValue {
 const FoldersContext = createContext<FoldersContextValue | null>(null);
 
 export function FoldersProvider({ children }: { children: ReactNode }) {
-  const [folders, setFolders] = useState<Folder[]>(initialFolders);
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [isAddingFolder, setIsAddingFolder] = useState(false);
+  const isAddingRef = useRef(false);
 
-  function addFolder(name: string) {
-    const newFolder: Folder = {
-      id: `folder-${Date.now()}`,
-      name,
-    };
-    setFolders((prev) => [...prev, newFolder]);
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("folders")
+      .select("id, name")
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        if (!data) return;
+        setFolders(data.map((row) => ({ id: String(row.id), name: row.name })));
+      });
+  }, []);
+
+  async function addFolder(name: string) {
+    if (isAddingRef.current) return;
+    isAddingRef.current = true;
+    setIsAddingFolder(true);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("folders")
+        .insert({ name })
+        .select("id, name")
+        .single();
+      if (error || !data) return;
+      setFolders((prev) => [...prev, { id: String(data.id), name: data.name }]);
+    } finally {
+      isAddingRef.current = false;
+      setIsAddingFolder(false);
+    }
   }
 
   function deleteFolder(folderId: string) {
@@ -37,7 +71,7 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
 
   return (
     <FoldersContext.Provider
-      value={{ folders, addFolder, deleteFolder, renameFolder }}
+      value={{ folders, isAddingFolder, addFolder, deleteFolder, renameFolder }}
     >
       {children}
     </FoldersContext.Provider>

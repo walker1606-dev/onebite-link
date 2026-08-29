@@ -7,7 +7,7 @@ import NewFolderModal from "@/components/new-folder-modal";
 import { useFolders } from "@/contexts/folders-context";
 
 export default function Header() {
-  const { addFolder } = useFolders();
+  const { addFolder, isAddingFolder } = useFolders();
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
   return (
@@ -18,8 +18,9 @@ export default function Header() {
       <div className="flex items-center gap-2">
         <button
           type="button"
+          disabled={isAddingFolder}
           onClick={() => setIsFolderModalOpen(true)}
-          className="icon-button-hover flex items-center gap-1.5 rounded-md border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text)]"
+          className="icon-button-hover flex items-center gap-1.5 rounded-md border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <FolderPlusIcon className="h-4 w-4" />
           새 폴더
@@ -35,6 +36,7 @@ export default function Header() {
 
       {isFolderModalOpen && (
         <NewFolderModal
+          isSubmitting={isAddingFolder}
           onClose={() => setIsFolderModalOpen(false)}
           onCreate={addFolder}
         />
