@@ -47,7 +47,7 @@ interface LinksContextValue {
   isAddingLink: boolean;
   addLink: (input: NewLinkInput) => Promise<void>;
   deleteLink: (linkId: string) => void;
-  updateLink: (linkId: string, input: LinkUpdateInput) => void;
+  updateLink: (linkId: string, input: LinkUpdateInput) => Promise<void>;
 }
 
 const LinksContext = createContext<LinksContextValue | null>(null);
@@ -119,7 +119,17 @@ export function LinksProvider({ children }: { children: ReactNode }) {
     setLinks((prev) => prev.filter((link) => link.id !== linkId));
   }
 
-  function updateLink(linkId: string, input: LinkUpdateInput) {
+  async function updateLink(linkId: string, input: LinkUpdateInput) {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("links")
+      .update({
+        title: input.title,
+        description: input.description,
+        folder_id: input.folderId ? Number(input.folderId) : null,
+      })
+      .eq("id", linkId);
+    if (error) return;
     setLinks((prev) =>
       prev.map((link) => (link.id === linkId ? { ...link, ...input } : link))
     );

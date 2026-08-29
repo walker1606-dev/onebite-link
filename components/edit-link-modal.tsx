@@ -9,7 +9,7 @@ import type { LinkItem } from "@/lib/mock-data";
 interface EditLinkModalProps {
   link: LinkItem;
   onClose: () => void;
-  onSave: (linkId: string, input: LinkUpdateInput) => void;
+  onSave: (linkId: string, input: LinkUpdateInput) => Promise<void>;
 }
 
 export default function EditLinkModal({
@@ -22,12 +22,12 @@ export default function EditLinkModal({
   const [title, setTitle] = useState(link.title);
   const [description, setDescription] = useState(link.description);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim();
     if (trimmedTitle.length === 0) return;
 
-    onSave(link.id, {
+    await onSave(link.id, {
       folderId,
       title: trimmedTitle,
       description: description.trim(),
