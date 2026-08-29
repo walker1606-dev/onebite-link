@@ -6,7 +6,7 @@ import type { Folder } from "@/lib/mock-data";
 interface DeleteFolderModalProps {
   folder: Folder;
   onClose: () => void;
-  onConfirm: (folderId: string) => void;
+  onConfirm: (folderId: string) => Promise<void>;
 }
 
 export default function DeleteFolderModal({
@@ -41,8 +41,8 @@ export default function DeleteFolderModal({
           </button>
           <button
             type="button"
-            onClick={() => {
-              onConfirm(folder.id);
+            onClick={async () => {
+              await onConfirm(folder.id);
               onClose();
             }}
             className="rounded-md bg-[var(--error)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
