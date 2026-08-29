@@ -7,7 +7,7 @@ import type { Folder } from "@/lib/mock-data";
 interface EditFolderModalProps {
   folder: Folder;
   onClose: () => void;
-  onRename: (folderId: string, name: string) => void;
+  onRename: (folderId: string, name: string) => Promise<void>;
 }
 
 export default function EditFolderModal({
@@ -17,11 +17,11 @@ export default function EditFolderModal({
 }: EditFolderModalProps) {
   const [name, setName] = useState(folder.name);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = name.trim();
     if (trimmed.length === 0) return;
-    onRename(folder.id, trimmed);
+    await onRename(folder.id, trimmed);
     onClose();
   }
 
