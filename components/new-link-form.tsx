@@ -2,12 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { useFolders } from "@/contexts/folders-context";
 import { useLinks } from "@/contexts/links-context";
-import type { Folder } from "@/lib/mock-data";
-
-interface NewLinkFormProps {
-  folders: Folder[];
-}
 
 interface OgResponse {
   url?: string;
@@ -16,8 +12,9 @@ interface OgResponse {
   image?: string | null;
 }
 
-export default function NewLinkForm({ folders }: NewLinkFormProps) {
+export default function NewLinkForm() {
   const router = useRouter();
+  const { folders } = useFolders();
   const { addLink } = useLinks();
   const [url, setUrl] = useState("");
   const [folderId, setFolderId] = useState("");

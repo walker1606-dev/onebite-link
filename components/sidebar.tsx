@@ -6,19 +6,11 @@ import { useState } from "react";
 import { FolderIcon, PencilIcon, TrashIcon } from "@/components/icons";
 import DeleteFolderModal from "@/components/delete-folder-modal";
 import EditFolderModal from "@/components/edit-folder-modal";
+import { useFolders } from "@/contexts/folders-context";
 import type { Folder } from "@/lib/mock-data";
 
-interface SidebarProps {
-  folders: Folder[];
-  onDeleteFolder: (folderId: string) => void;
-  onRenameFolder: (folderId: string, name: string) => void;
-}
-
-export default function Sidebar({
-  folders,
-  onDeleteFolder,
-  onRenameFolder,
-}: SidebarProps) {
+export default function Sidebar() {
+  const { folders, deleteFolder, renameFolder } = useFolders();
   const pathname = usePathname();
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
   const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
@@ -72,7 +64,7 @@ export default function Sidebar({
         <DeleteFolderModal
           folder={folderToDelete}
           onClose={() => setFolderToDelete(null)}
-          onConfirm={onDeleteFolder}
+          onConfirm={deleteFolder}
         />
       )}
 
@@ -80,7 +72,7 @@ export default function Sidebar({
         <EditFolderModal
           folder={folderToEdit}
           onClose={() => setFolderToEdit(null)}
-          onRename={onRenameFolder}
+          onRename={renameFolder}
         />
       )}
     </aside>

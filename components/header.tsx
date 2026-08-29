@@ -4,12 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { PlusIcon, FolderPlusIcon } from "@/components/icons";
 import NewFolderModal from "@/components/new-folder-modal";
+import { useFolders } from "@/contexts/folders-context";
 
-interface HeaderProps {
-  onCreateFolder: (name: string) => void;
-}
-
-export default function Header({ onCreateFolder }: HeaderProps) {
+export default function Header() {
+  const { addFolder } = useFolders();
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
   return (
@@ -38,7 +36,7 @@ export default function Header({ onCreateFolder }: HeaderProps) {
       {isFolderModalOpen && (
         <NewFolderModal
           onClose={() => setIsFolderModalOpen(false)}
-          onCreate={onCreateFolder}
+          onCreate={addFolder}
         />
       )}
     </header>

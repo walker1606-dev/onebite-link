@@ -28,10 +28,17 @@ export interface NewLinkInput {
   imageUrl: string | null;
 }
 
+export interface LinkUpdateInput {
+  folderId: string;
+  title: string;
+  description: string;
+}
+
 interface LinksContextValue {
   links: LinkItem[];
   addLink: (input: NewLinkInput) => void;
   deleteLink: (linkId: string) => void;
+  updateLink: (linkId: string, input: LinkUpdateInput) => void;
 }
 
 const LinksContext = createContext<LinksContextValue | null>(null);
@@ -56,8 +63,16 @@ export function LinksProvider({ children }: { children: ReactNode }) {
     setLinks((prev) => prev.filter((link) => link.id !== linkId));
   }
 
+  function updateLink(linkId: string, input: LinkUpdateInput) {
+    setLinks((prev) =>
+      prev.map((link) => (link.id === linkId ? { ...link, ...input } : link))
+    );
+  }
+
   return (
-    <LinksContext.Provider value={{ links, addLink, deleteLink }}>
+    <LinksContext.Provider
+      value={{ links, addLink, deleteLink, updateLink }}
+    >
       {children}
     </LinksContext.Provider>
   );

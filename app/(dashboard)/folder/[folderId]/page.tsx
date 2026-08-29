@@ -2,11 +2,12 @@
 
 import { notFound, useParams } from "next/navigation";
 import LinkGrid from "@/components/link-grid";
+import { useFolders } from "@/contexts/folders-context";
 import { useLinks } from "@/contexts/links-context";
-import { folders } from "@/lib/mock-data";
 
 export default function FolderPage() {
   const { folderId } = useParams<{ folderId: string }>();
+  const { folders } = useFolders();
   const { links } = useLinks();
   const folder = folders.find((item) => item.id === folderId);
 
