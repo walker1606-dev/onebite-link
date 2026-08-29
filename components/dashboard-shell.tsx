@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
+import { LinksProvider } from "@/contexts/links-context";
 import type { Folder } from "@/lib/mock-data";
 
 interface DashboardShellProps {
@@ -45,7 +46,9 @@ export default function DashboardShell({
           onDeleteFolder={handleDeleteFolder}
           onRenameFolder={handleRenameFolder}
         />
-        <main className="flex-1 overflow-y-auto p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-8">
+          <LinksProvider>{children}</LinksProvider>
+        </main>
       </div>
     </div>
   );

@@ -2,20 +2,49 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { useLinks } from "@/contexts/links-context";
 import type { Folder } from "@/lib/mock-data";
 
 interface NewLinkFormProps {
   folders: Folder[];
 }
 
+interface OgResponse {
+  url?: string;
+  title?: string;
+  description?: string;
+  image?: string | null;
+}
+
 export default function NewLinkForm({ folders }: NewLinkFormProps) {
   const router = useRouter();
+  const { addLink } = useLinks();
   const [url, setUrl] = useState("");
   const [folderId, setFolderId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    router.push("/");
+    const trimmedUrl = url.trim();
+    if (trimmedUrl.length === 0 || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`/api/og?url=${encodeURIComponent(trimmedUrl)}`);
+      const og: OgResponse = await response.json();
+
+      addLink({
+        url: og.url ?? trimmedUrl,
+        folderId,
+        title: og.title ?? trimmedUrl,
+        description: og.description ?? "",
+        imageUrl: og.image ?? null,
+      });
+
+      router.push("/");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -66,10 +95,10 @@ export default function NewLinkForm({ folders }: NewLinkFormProps) {
 
       <button
         type="submit"
-        disabled={url.trim().length === 0}
+        disabled={url.trim().length === 0 || isSubmitting}
         className="button-primary-hover rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
       >
-        저장하기
+        {isSubmitting ? "확인 중..." : "확인"}
       </button>
     </form>
   );

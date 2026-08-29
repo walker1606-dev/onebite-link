@@ -10,11 +10,20 @@ export default function LinkCard({ link }: LinkCardProps) {
 
   return (
     <article className="card-hover group flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-      <div
-        className={`flex h-32 items-center justify-center bg-gradient-to-br ${link.thumbnailGradient}`}
-      >
-        <LinkIcon className="h-8 w-8 text-white/80" />
-      </div>
+      {link.thumbnailUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- thumbnail comes from an arbitrary external URL
+        <img
+          src={link.thumbnailUrl}
+          alt=""
+          className="h-32 w-full object-cover"
+        />
+      ) : (
+        <div
+          className={`flex h-32 items-center justify-center bg-gradient-to-br ${link.thumbnailGradient}`}
+        >
+          <LinkIcon className="h-8 w-8 text-white/80" />
+        </div>
+      )}
       <div className="flex flex-1 flex-col gap-1 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="line-clamp-1 text-sm font-semibold text-[var(--text)]">

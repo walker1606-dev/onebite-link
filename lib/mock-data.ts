@@ -9,6 +9,7 @@ export interface LinkItem {
   url: string;
   description: string;
   thumbnailGradient: string;
+  thumbnailUrl?: string | null;
   folderId: string;
 }
 

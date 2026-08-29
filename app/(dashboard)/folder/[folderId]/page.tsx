@@ -1,13 +1,13 @@
-import { notFound } from "next/navigation";
-import LinkGrid from "@/components/link-grid";
-import { folders, links } from "@/lib/mock-data";
+"use client";
 
-export default async function FolderPage({
-  params,
-}: {
-  params: Promise<{ folderId: string }>;
-}) {
-  const { folderId } = await params;
+import { notFound, useParams } from "next/navigation";
+import LinkGrid from "@/components/link-grid";
+import { useLinks } from "@/contexts/links-context";
+import { folders } from "@/lib/mock-data";
+
+export default function FolderPage() {
+  const { folderId } = useParams<{ folderId: string }>();
+  const { links } = useLinks();
   const folder = folders.find((item) => item.id === folderId);
 
   if (!folder) {
