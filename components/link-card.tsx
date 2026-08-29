@@ -1,4 +1,9 @@
-import { EllipsisIcon, LinkIcon } from "@/components/icons";
+"use client";
+
+import { useState } from "react";
+import { EllipsisIcon, LinkIcon, TrashIcon } from "@/components/icons";
+import DeleteLinkModal from "@/components/delete-link-modal";
+import { useLinks } from "@/contexts/links-context";
 import type { LinkItem } from "@/lib/mock-data";
 
 interface LinkCardProps {
@@ -6,10 +11,21 @@ interface LinkCardProps {
 }
 
 export default function LinkCard({ link }: LinkCardProps) {
+  const { deleteLink } = useLinks();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const hostname = new URL(link.url).hostname;
 
   return (
-    <article className="card-hover group flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+    <article className="card-hover group relative flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface)]">
+      <button
+        type="button"
+        aria-label="링크 삭제"
+        onClick={() => setIsDeleteModalOpen(true)}
+        className="absolute top-2 right-2 z-10 rounded-md bg-white/90 p-1.5 text-[var(--text-sub)] opacity-0 shadow-sm transition-opacity hover:bg-white hover:text-[var(--error)] group-hover:opacity-100"
+      >
+        <TrashIcon className="h-4 w-4" />
+      </button>
+
       {link.thumbnailUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- thumbnail comes from an arbitrary external URL
         <img
@@ -44,6 +60,14 @@ export default function LinkCard({ link }: LinkCardProps) {
           {hostname}
         </span>
       </div>
+
+      {isDeleteModalOpen && (
+        <DeleteLinkModal
+          link={link}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={deleteLink}
+        />
+      )}
     </article>
   );
 }
