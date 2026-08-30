@@ -30,16 +30,39 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase
-      .from("folders")
-      .select("id, name")
-      .order("created_at", { ascending: true })
-      .then(({ data }) => {
-        if (data) {
-          setFolders(data.map((row) => ({ id: String(row.id), name: row.name })));
-        }
+    let loadedUserId: string | null | undefined;
+
+    async function loadFolders(userId: string | undefined) {
+      loadedUserId = userId ?? null;
+      if (!userId) {
+        setFolders([]);
         setIsLoadingFolders(false);
-      });
+        return;
+      }
+      setIsLoadingFolders(true);
+      const { data } = await supabase
+        .from("folders")
+        .select("id, name")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true });
+      setFolders(
+        data ? data.map((row) => ({ id: String(row.id), name: row.name })) : []
+      );
+      setIsLoadingFolders(false);
+    }
+
+    supabase.auth.getUser().then(({ data: { user } }) => loadFolders(user?.id));
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const userId = session?.user.id ?? null;
+      if (userId !== loadedUserId) {
+        loadFolders(session?.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   async function addFolder(name: string) {
