@@ -32,7 +32,9 @@ export const createClient = async (request: NextRequest) => {
   });
 
   // Refresh the session if expired - required for Server Components
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { response: supabaseResponse, user };
 };
