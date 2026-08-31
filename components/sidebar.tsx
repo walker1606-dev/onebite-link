@@ -88,6 +88,12 @@ export default function Sidebar() {
           <LogOutIcon className="h-4 w-4 shrink-0" />
           로그아웃
         </button>
+        <Link
+          href="/privacy"
+          className="nav-item-hover mt-1 flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-[var(--text-sub)]"
+        >
+          개인정보 처리방침
+        </Link>
       </div>
 
       {folderToDelete && (
