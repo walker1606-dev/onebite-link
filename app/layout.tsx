@@ -12,9 +12,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const title = "한입 링크";
+const description = "나만의 북마크를 폴더별로 모아보는 링크 서비스";
+
 export const metadata: Metadata = {
-  title: "한입 링크",
-  description: "나만의 북마크를 폴더별로 모아보는 링크 서비스",
+  title: {
+    default: title,
+    template: `%s | ${title}`,
+  },
+  description,
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title,
+    description,
+    type: "website",
+    locale: "ko_KR",
+    images: ["/thumbnail.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/thumbnail.png"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
